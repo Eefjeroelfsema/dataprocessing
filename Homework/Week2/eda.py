@@ -125,7 +125,6 @@ def gdp(dataframe_gdp):
     plt.xlabel('GDP')
     plt.ylabel('Probability')
     plt.title('Histogram of GDP of countries with deleted outliers')
-    # plt.axis([0,60000,0,0.00008])
     plt.grid(True)
     plt.show()
 
