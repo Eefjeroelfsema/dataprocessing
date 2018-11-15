@@ -78,8 +78,6 @@ def gdp(dataframe_gdp):
     q1 = dataframe_gdp.quantile(q=0.25)
     q3 = dataframe_gdp.quantile(q=0.75)
 
-    print(dataframe_gdp)
-
     print(f"Mean with outliers: ", mean)
     print(f"Median with outliers: ", median)
     print(f"Mode with outliers: ", mode)
@@ -106,8 +104,6 @@ def gdp(dataframe_gdp):
 
     # make new dataframe for removed outlier list
     dataframe_gdpadjust = pd.DataFrame(gdp_list)
-
-    print(dataframe_gdpadjust)
 
     # calculate Mean, Median, Mode of GDP for data without outliers
     mean_adjust = dataframe_gdpadjust.mean()
