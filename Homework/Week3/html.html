@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Eefje Roelfsema 10993673</title>
+  </head>
+
+  <body>
+    <script>
+      var fileName = "data.json";
+      var txtFile = new XMLHttpRequest();
+      txtFile.onreadystatechange = function() {
+          if (txtFile.readyState === 4 && txtFile.status == 200) {
+              console.log(JSON.parse(txtFile.responseText));
+              const data = JSON.parse(txtFile.responseText);
+
+          var canvas = document.getElementById('canvas');
+          var ctx = canvas.getContext('2d');
+
+          ctx.beginPath();       // Start a new path
+          ctx.moveTo(0, 0);    // Move the pen to {50, 50}
+          ctx.lineTo(0, 500);  // Draw a line to {150, 100}
+          ctx.moveTo(0, 500);
+          ctx.lineTo(750,500);
+          ctx.stroke();
+
+          lineChart(data)
+
+          }
+      }
+      txtFile.open("GET", fileName);
+      txtFile.send();
+
+      function createTransform(domain, range){
+    	// domain is a two-element array of the data bounds [domain_min, domain_max]
+    	// range is a two-element array of the screen bounds [range_min, range_max]
+    	// this gives you two equations to solve:
+    	// range_min = alpha * domain_min + beta
+    	// range_max = alpha * domain_max + beta
+
+
+      var domain_min = domain[0]
+      var domain_max = domain[1]
+      var range_min = range[0]
+      var range_max = range[1]
+
+      // formulas to calculate the alpha and the beta
+     	var alpha = (range_max - range_min) / (domain_max - domain_min)
+      var beta = range_max - alpha * domain_max
+
+      // returns the function for the linear transformation (y= a * x + b)
+      return function(x){
+        return alpha * x + beta;
+      }
+  }
+
+
+      function lineChart(data){
+        const first_day = new Date(data['date'][0]);
+        const last_day = new Date(data['date'][561]);
+
+        const datamin = first_day.getTime();
+        const datamax = last_day.getTime();
+
+        // make functions to find coordinates
+        ytransform = createTransform([0,75], [0,500]);
+        xtransform = createTransform([datamin,datamax], [0,750]);
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        ctx.beginPath();
+        ctx.moveTo(0,500)
+        for (var i = 0; i < data['value'].length; i++) {
+            const y = data['value'][i]
+            const x = new Date(data['date'][i])
+            const x_temp = x.getTime()
+            const coordinate_y = ytransform(y)
+            const coordinate_x = xtransform(x_temp)
+            console.log(ytransform(10))
+            ctx.lineTo(coordinate_x, coordinate_y)
+            ctx.moveTo(coordinate_x, coordinate_y)
+        }
+        ctx.stroke()
+      }
+    </script>
+    <canvas id = "canvas" width="1000" height="1000"></canvas>
+  </body>
+
+</html>
