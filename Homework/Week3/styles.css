@@ -1,0 +1,42 @@
+body
+{
+    background-color: #D4F8F1;
+
+}
+
+table{
+  border: 1px solid black;
+  margin: 1px auto
+}
+tr
+{
+    height: 50px;
+    color: black;
+}
+
+td
+{
+    font-size: 12pt;
+    font-family: arial;
+    text-align: left;
+    width: 150px;
+    color: black
+
+}
+
+table.center {
+  margin-left:auto;
+  margin-right:auto;
+}
+
+table, th, td {
+   border: 1px solid black;
+}
+
+td:first-child {
+  font-weight: bold
+}
+
+td:nth-child(3) {
+  font-weight: bold
+}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-
 <html>
-  <head>
+<head>
+     <link href="styles.css" rel="stylesheet">
     <title>Eefje Roelfsema 10993673</title>
   </head>
 
@@ -14,39 +14,86 @@
               console.log(JSON.parse(txtFile.responseText));
               const data = JSON.parse(txtFile.responseText);
 
-          var canvas = document.getElementById('canvas');
-          var ctx = canvas.getContext('2d');
-
-          ctx.beginPath();       // Start a new path
-          ctx.moveTo(0, 0);    // Move the pen to {50, 50}
-          ctx.lineTo(0, 500);  // Draw a line to {150, 100}
-          ctx.moveTo(0, 500);
-          ctx.lineTo(750,500);
-          ctx.stroke();
-
-          lineChart(data)
-
+          lineChart(data);
+          createTable(data);
           }
       }
       txtFile.open("GET", fileName);
       txtFile.send();
 
+      function createAsses(){
+
+        // define domain and range
+        const x_min = 100
+        const x_max = 1000
+        const y_min = 100
+        const y_max = 600
+
+        // define years of dataset
+        const year_min = 1972
+        const year_max = 2018
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        ctx.beginPath();
+        // draw y-as
+        ctx.moveTo(x_min, y_min);
+        ctx.lineTo(x_min, y_max);
+
+        // draw x-as
+        ctx.moveTo(x_min, y_max);
+        ctx.lineTo(x_max,y_max);
+        ctx.stroke();
+
+        // make index y-as
+        // make start y-as-legenda coordinate
+        var coor_legenda_y_as = y_max
+        ctx.beginPath()
+
+        // place index every 10th rate (range 0-100)
+        for(var i= 0; i <= 100; i = i + 10) {
+        ctx.fillText(i, 75, coor_legenda_y_as);
+        // make small lines to point to index
+        ctx.moveTo((x_min - 5), coor_legenda_y_as)
+        ctx.lineTo((x_min + 5), coor_legenda_y_as)
+
+        // y-as is 500 pixels long, to divede over 10 times every index must me 50 pixels higher
+        coor_legenda_y_as = coor_legenda_y_as - 50;
+        }
+        ctx.stroke()
+
+        // make index x-as
+        // make start x-as-legenda coordinate
+        var coor_legenda_x_as = x_min;
+        ctx.beginPath()
+
+        // this formula sets the jump for the years in the right place
+        jump_x_as = (x_max - x_min)/((year_max - year_min)/4)
+
+        //iterate over every 4 years and add to legenda
+        for(var year = year_min; year <= year_max; year = year + 4){
+          ctx.fillText(year, coor_legenda_x_as, 625);
+          coor_legenda_x_as = coor_legenda_x_as + jump_x_as;
+
+          // make small lines to point to index
+          ctx.moveTo(coor_legenda_x_as,(y_max - 5))
+          ctx.lineTo(coor_legenda_x_as,(y_max + 5))
+        }
+        ctx.stroke()
+      }
+
       function createTransform(domain, range){
-    	// domain is a two-element array of the data bounds [domain_min, domain_max]
-    	// range is a two-element array of the screen bounds [range_min, range_max]
-    	// this gives you two equations to solve:
-    	// range_min = alpha * domain_min + beta
-    	// range_max = alpha * domain_max + beta
 
-
-      var domain_min = domain[0]
-      var domain_max = domain[1]
-      var range_min = range[0]
-      var range_max = range[1]
+      // define domain and range
+      var domain_min = domain[0];
+      var domain_max = domain[1];
+      var range_min = range[0];
+      var range_max = range[1];
 
       // formulas to calculate the alpha and the beta
-     	var alpha = (range_max - range_min) / (domain_max - domain_min)
-      var beta = range_max - alpha * domain_max
+     	var alpha = (range_max - range_min) / (domain_max - domain_min);
+      var beta = range_max - alpha * domain_max;
 
       // returns the function for the linear transformation (y= a * x + b)
       return function(x){
@@ -54,37 +101,170 @@
       }
   }
 
-
       function lineChart(data){
+        // make the asses of the line graph
+        createAsses()
+
+        // define domain and range
+        const x_min = 100
+        const x_max = 1000
+        const y_min = 100
+        const y_max = 600
+
+        // define years of dataset
+        const year_min = 1972
+        const year_max = 2018
+
+        // define first- and laste date of dataset
         const first_day = new Date(data['date'][0]);
         const last_day = new Date(data['date'][561]);
 
+        // transform first and lastday till milliseconds
         const datamin = first_day.getTime();
         const datamax = last_day.getTime();
 
         // make functions to find coordinates
-        ytransform = createTransform([0,75], [0,500]);
-        xtransform = createTransform([datamin,datamax], [0,750]);
+        ytransform = createTransform([0,100], [y_max,y_min]);
+        xtransform = createTransform([datamin,datamax], [x_min,x_max]);
 
+        // start line graph
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
 
+        // add title and title of asses
+        ctx.font = '30px serif';
+        ctx.fillText('Labor force participation rate of black- or african-american U.S. citizens',100,50);
+
+        // give x-as title
+        ctx.font = '17px serif'
+        ctx.fillText('Years', 900, 650);
+
+        // give y-as title
+        ctx.save()
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Participation rate', -320, 40);
+        ctx.rotate(Math.PI / 2);
+
+        // begin drawing line-graph
         ctx.beginPath();
-        ctx.moveTo(0,500)
+        ctx.moveTo(100,600);
+
         for (var i = 0; i < data['value'].length; i++) {
-            const y = data['value'][i]
-            const x = new Date(data['date'][i])
-            const x_temp = x.getTime()
-            const coordinate_y = ytransform(y)
-            const coordinate_x = xtransform(x_temp)
-            console.log(ytransform(10))
-            ctx.lineTo(coordinate_x, coordinate_y)
-            ctx.moveTo(coordinate_x, coordinate_y)
+
+            // extract value and date per point
+            const y = data['value'][i];
+            const x = new Date(data['date'][i]);
+
+            // make milliseconds of date
+            const x_temp = x.getTime();
+            const x_as = x.getFullYear();
+
+            // finde coordinates of point
+            const coordinate_y = ytransform(y);
+            const coordinate_x = xtransform(x_temp);
+
+            // draw line and set cursor to point
+            ctx.lineTo(coordinate_x, coordinate_y);
+            ctx.moveTo(coordinate_x, coordinate_y);
         }
         ctx.stroke()
+
+        // add data-source
+        ctx.font = '12px serif'
+        ctx.fillText('datasource: https://www.kaggle.com/bls/labor-force-participation-rate-data-collection#labor-force-participation-rate-black-or-african-american.csv', 285,670)
+
+        // give table a title
+        // I know this is not the correct way, but I couldn't find a better way
+        ctx.font = '20px serif'
+        ctx.fillText('Average participation rate per year', 550, 690)
       }
+
+
+    // a table is made, because the linegraph alone is not very informative
+    function createTable(data) {
+
+      // define years of dataset
+      const year_min = 1972
+      const year_max = 2018
+
+      // calculate averages per year in dataset
+      averages = []
+      var average = 0
+
+      // iterate over every value in dataset
+      for(i = 0; i< data['value'].length; i++) {
+        for(var month = 0; month < 12; month ++) {
+
+          // add all 12 months up
+          average = (average + parseFloat(data['value'][i]))
+        }
+        // calculate average
+        average = average/12
+
+        // add average to list
+        averages.push(average)
+
+        // set everage to 0
+        average = 0
+      }
+
+      // get the reference for the body
+      var body = document.getElementsByTagName("body")[0];
+
+      // creates a <table> element and a <tbody> element
+      var tbl = document.createElement("table");
+      var tblBody = document.createElement("tbody");
+
+      // creating table
+      for (var i = year_min; i <= (year_min + year_max)/2; i++) {
+
+      // creates a table row
+        var row = document.createElement("tr");
+
+        // make 4 columns to shorten the lenght of table
+        for (var j = 0; j < 4; j++) {
+          if (j == 0){
+
+            // add first halve of the years in this column
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(i)
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+          }
+          else if (j == 1){
+
+            // add values belonging to first halve of the years in this column
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(averages[i - 1972])
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+          }
+          // add second halve of the years in this column
+          else if (j == 2) {
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(i + 23)
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+          }
+          else {
+            // add values belonging to second halve of the years in this column
+            var cell = document.createElement("td");
+            var cellText = document.createTextNode(averages[i - 1972 + 23])
+            cell.appendChild(cellText);
+            row.appendChild(cell);
+          }
+        }
+          // add the row to the end of the table body
+          tblBody.appendChild(row);
+   }
+         // put the <tbody> in the <table>
+    tbl.appendChild(tblBody);
+    // appends <table> into <body>
+    body.appendChild(tbl);;
+   }
+
     </script>
-    <canvas id = "canvas" width="1000" height="1000"></canvas>
+    <canvas id = "canvas" width="1000" height="700"></canvas>
   </body>
 
 </html>
