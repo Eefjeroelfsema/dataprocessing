@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Eefje Roelfsema 10993673</title>
+    <link href="styles.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+  </head>
+  <body>
+    <script>
+      d3.select("body").append("p").text("Eefje Roelfsema")
+      d3.select("body").append("p").text("This bar-chart shows the number of suicides per year in the Netherlands")
+
+
+      suicide_rates = []
+      d3.json("data.json").then(function(data) {
+              console.log(data);
+
+          for (x in data){
+            suicide_rates.push(data[x]);
+          }
+
+          var h = 500;
+          var w = 750;
+          var barPadding = 1
+          console.log(suicide_rates)
+          var svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", w)
+                      .attr("height", h);
+
+          var x_scale = d3.scaleLinear()
+                          .domain([1979, 2016])
+                          .range([0, w]);
+
+          var y_scale = d3.scaleLinear()
+                          .domain([0, 2000])
+                          .range([0, h]);
+
+
+          console.log(y_scale(2000))
+          svg.selectAll("rect")
+              .data(suicide_rates)
+              .enter()
+              .append("rect")
+              .attr("x", function(d, i) {
+                return i * (w / suicide_rates.length);
+              })
+              .attr("y", function(d) {
+                return h - y_scale(d);  //Height minus data value
+              })
+              .attr("width", w / suicide_rates.length - barPadding)
+              .attr("height", function(d) {
+                return (d);
+              });
+
+          var yAxis = d3.axisLeft()
+                        .scale(y_scale)
+                        .ticks(10)
+
+          var xAxis = d3.axisBottom()
+                        .scale(x_scale)
+                        .ticks(30)
+         svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(d3.axisBottom(x_scale))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)") // Create an axis component with d3.axisBottom
+
+      });
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y_scale)); // Create an axis component with d3.axisLeft
+
+
+      </script>
+
+    <!-- This is where your bar chart will go -->
+  </body>
+</html>
