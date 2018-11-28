@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Eefje Roelfsema 10993673</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+  </head>
+  <body>
+    <link href="styles.css" rel="stylesheet"></link>
+    <script>
+
+      d3.select("body").append("p").text("Eefje Roelfsema")
+      d3.select("body").append("p").text("This bar-chart shows the number of suicides per year in the Netherlands")
+
+      suicide_rates = []
+      years = []
+      d3.json("data.json").then(function(data) {
+
+          // fill suicide_rates list
+          for (x in data){
+            suicide_rates.push(data[x]);
+          }
+
+          // define hight and width of svg and bar-chart
+          var h = 500;
+          var h_svg = 600
+          var w = 750;
+          var w_svg = 800
+          var barPadding = 1
+          var move_left = 50
+          var move_up = 10
+
+          // define max and min of dataset
+          var min_year = 1979
+          var max_year = 2016
+          var min_suicides = 0
+          var max_suicides = 2000
+
+          // make svg
+          var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w_svg)
+            .attr("height", h_svg);
+
+          // make x_scale
+          var x_scale = d3.scaleLinear()
+            .domain([min_year, max_year])
+            .range([move_left, w]);
+
+          // make y_scale
+          var y_scale = d3.scaleLinear()
+            .domain([min_suicides, max_suicides])
+            .range([h, move_up]);
+
+          // make bar-chart
+          bar_chart(suicide_rates, svg, x_scale, y_scale, h, w, move_left, barPadding, min_year)
+
+          // add axis
+          axis(x_scale, y_scale, svg, h, move_left)
+
+          // add titles
+          titles(svg, h, w)
+          })
+
+      function bar_chart(suicide_rates, svg, x_scale, y_scale, h, w, move_left, barPadding, min_year){
+
+        // make tip for interactivity feature
+        var tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function(d, i) {
+            return "<strong>Suicide rate:</strong> <span style='color:red'>" + d + "</span>";
+          })
+
+        svg.call(tip)
+
+        // built barchart
+        svg.selectAll("rect")
+          .data(suicide_rates)
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          // x-values are the years
+          .attr("x", function(d, i) {
+            return x_scale(i + min_year)
+            })
+          // y-values are the suicide_rates
+          .attr("y", function(d) {
+            return y_scale(d)  //Height minus data value
+          })
+          // define width
+          .attr("width", (w - move_left) / suicide_rates.length - barPadding)
+          // define height of each bar
+          .attr("height", function(d) {
+            return h - y_scale(d);
+          })
+          // if mouse is in barchart, show height in activity feature
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide)
+      }
+
+    function axis(x_scale, y_scale, svg, h){
+
+      // add scales to x-axis
+      var x_axis = d3.axisBottom()
+        .scale(x_scale);
+
+      // append group and insert axis
+      svg.append("g")
+        .attr("transform", "translate(0," + h + ")")
+        .call(x_axis);
+
+      // add scales to y-axis
+     var y_axis = d3.axisLeft()
+        .scale(y_scale);
+
+      // append group and insert axis
+      svg.append("g")
+        .attr("transform", "translate(49, 0)")
+        .call(y_axis);
+
+    }
+
+    function titles(svg, h, w) {
+
+      // add title
+      svg.append('text')
+        .attr('class', 'title')
+        .attr('x', w / 2)
+        .attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .text('Total number of suicides per year in the Netherlands')
+
+      // add x-as title
+      svg.append('text')
+        .attr('class', 'title')
+        .attr('x', w/2)
+        .attr('y', h + 30)
+        .attr('text-anchor', 'middle')
+        .text('Years')
+
+      // add y-as title
+      svg.append('text')
+        .attr('class', 'title')
+        .attr('x', -100)
+        .attr('y', 10)
+        .attr("transform", "rotate(-90)")
+        .attr('text-anchor', 'middle')
+        .text('Number of suicides')
+
+        // add x-as title
+        svg.append('text')
+          .attr('class', 'title')
+          .attr('x', w/2)
+          .attr('y', h + 70)
+          .attr('text-anchor', 'middle')
+          .text('datasource: https://www.kaggle.com/szamil/who-suicide-statistics')  
+
+    }
+
+    </script>
+  </body>
+</html>
