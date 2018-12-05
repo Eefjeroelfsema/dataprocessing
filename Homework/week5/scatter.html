@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Eefje Roelfsema 10993673</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+	  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+    <script src= javascript.js ></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <link href="scatter.css" rel="stylesheet"></link>
+    <script>
+      d3.select("body").append("p").text("Eefje Roelfsema, 10993673")
+
+    </script>
+    <div>
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            Show scatterplot <span class="caret"></span>
+      </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a class="m" value=7 href="#">All</a></li>
+          <li><a class="m" value=1 href="#">France</a></li>
+          <li><a class="m" value=2 href="#">Netherlands</a></li>
+          <li><a class="m" value=3 href="#">Portugal</a></li>
+          <li><a class="m" value=4 href="#">Germany</a></li>
+          <li><a class="m" value=5 href="#">United Kingdom</a></li>
+          <li><a class="m" value=6 href="#">Korea</a></li>
+        </ul>
+    </div>
+    <div id="mbars">
+  </div>
+  <ul class="legend">
+      <li><span class="france"></span> France </li>
+      <li><span class="netherlands"></span> Netherlands</li>
+      <li><span class="portugal"></span> Portugal </li>
+      <li><span class="germany"></span> Germany </li>
+      <li><span class="unitedkingdom"></span> United Kingdom </li>
+      <li><span class="korea"></span> Korea </li>
+  </ul>
+  </body>
+</html>
